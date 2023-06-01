@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+            .container input[type="text"],
+            .container input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                box-sizing: border-box;
+            }
+
+            .container input[type="submit"] {
+                width: 100%;
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .container a {
+                display: block;
+                text-align: center;
+                margin-top: 10px;
+                color: #999;
+                text-decoration: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form>
+            <input type="text" name="username" id="username" placeholder="Username" required>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+            <label id="message"></label>
+            <label style="color:red">@ViewBag.Error</label>
+            <button type="submit" class="btn btn-success" id="btnSubmit">Sign Up</button>
+        </form>
+        <br />
+        <a href="../User/Index">Sign In</a>
+    </div>
+</body>
+</html>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $('document').ready(function () {
+            $('#btnSubmit').hide();
+        });
+        $('#password, #confirmPassword').on('keyup', function () {
+            if ($('#password').val() == $('#confirmPassword').val()) {
+                $('#message').html('Matching').css('color', 'green');
+                $('#btnSubmit').show();
+
+            }
+            else
+            {
+                $('#message').html('Not Matching').css('color', 'red');
+                $('#btnSubmit').hide();
+            }
+
+        });
+
+    </script>
+}
+
+
+
+

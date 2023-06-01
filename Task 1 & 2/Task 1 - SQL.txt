@@ -1,0 +1,12 @@
+SELECT
+  MAX(DATEDIFF(month,joindate,getdate()) * MonthlySalary) AS MaximumTotalEarnings,
+  COUNT(*) AS TotalEmployees
+FROM
+  Employee
+WHERE
+  DATEDIFF(month,joindate,getdate()) = (
+    SELECT
+      MAX(DATEDIFF(month,joindate,getdate()))
+    FROM
+      Employee
+  );

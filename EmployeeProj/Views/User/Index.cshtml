@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+            .container input[type="text"],
+            .container input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                box-sizing: border-box;
+            }
+
+            .container input[type="submit"] {
+                width: 100%;
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .container a {
+                display: block;
+                text-align: center;
+                margin-top: 10px;
+                color: #999;
+                text-decoration: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="submit" value="Login">
+        </form>
+        <a href="../RegisterUser/index">Sign up</a>
+    </div>
+</body>
+</html>

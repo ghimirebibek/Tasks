@@ -1,0 +1,288 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f3f3f3;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Employee Details</h2>
+        <form id="employeeForm">
+            <div>
+                <input type="text" id="employeeId" name="employeeId" hidden>
+
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName">
+
+                <label for="middleName">Middle Name:</label>
+                <input type="text" id="middleName" name="middleName">
+
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required>
+
+                <label for="monthlySalary">Monthly Salary:</label>
+                <input type="number" id="monthlySalary" name="monthlySalary" required>
+            </div>
+
+
+            <input class="btn-success" type="button" id="saveEmployee" onclick="InsertEmployee();" value="Add">
+            <input class="btn-success" type="button" id="updateEmployee" onclick="UpdateEmployee();" value="Update">
+        </form>
+
+        <h2>Employee List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>S.N</th>
+                    <th>Name</th>
+                    <th>Joined Date</th>
+                    <th>Monthly Salary</th>
+                    <th>Total Salary Earned</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="employeeTable">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th id="sumMonthlySalary"></th>
+                    <th id="sumTotalSalary"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $('document').ready(function () {
+            $('#updateEmployee').hide();
+            $('#saveEmployee').show();
+            GetEmpList();
+        });
+
+
+        function GetEmpList() {
+            $.ajax({
+                url: '/Employee/GetEmpList',
+                method: 'get',
+                dataType: 'JSON',
+                success: function (data) {
+                    var es = '';
+                    var totMonthlySalary = 0;
+                    var totTotalSalary = 0;
+                    $.each(data, function (key, item) {
+                        es += '<tr>';
+                        es += '<td>' + (key + 1) + '</td>';
+                        es += '<td>' + item.fullName + '</td>';
+                        es += '<td>' + item.joinDate + '</td>';
+                        es += '<td>' + item.monthlySalary + '</td>';
+                        totMonthlySalary = totMonthlySalary + item.monthlySalary;
+                        es += '<td>' + item.totalSalary + '</td>';
+                        totTotalSalary = totTotalSalary + item.totalSalary;
+                        es += '<td><button class="btn btn-info" onclick="GetEmployeebyID(' + item.employeeId + ')" ><i class="fa fa-edit"></i></button></td ></tr >';
+
+                    });
+                    $('#employeeTable').html(es);
+                    $('#sumMonthlySalary').html('Total: '+totMonthlySalary);
+                    $('#sumTotalSalary').html('Total: '+totTotalSalary);
+                },
+                error: function () {
+
+                    toastr.error("Unable to retreive data");
+                }
+            });
+        }
+
+        function InsertEmployee() {
+            if ($('#firstName').val() == '') {
+                toastr.error("First Name is required");
+                return false;
+            }
+            else if ($('#lastName').val() == '') {
+                toastr.error("Last Name is required");
+                return false;
+            }
+            else if ($('#monthlySalary').val() == '' || $('#monthlySalary').val() == 0) {
+                toastr.error("Monthly Salary is required");
+                return false;
+            }
+            else {
+                    var data = {
+                        firstName: $('#firstName').val(),
+                        middleName: $('#middleName').val(),
+                        lastName: $('#lastName').val(),
+                        monthlySalary: $('#monthlySalary').val(),
+                    };
+                    $.ajax({
+                        url: '/Employee/InsertEmployee',
+                        method: 'post',
+                        dataType: 'JSON',
+                        data: data,
+                        success: function (data) {
+                            toastr.success(data);
+                            GetEmpList();
+                            reset();
+                        },
+                        error: function () {
+                            toastr.error("Unable to insert");
+                        }
+                    });
+                 }
+        }
+
+
+        function GetEmployeebyID(empId) {
+            $('#updateEmployee').show();
+            $('#saveEmployee').hide();
+            $.ajax({
+                url: '/Employee/GetEmpById?empId=' + empId,
+                method: 'get',
+                dataType: 'JSON',
+                success: function (data) {
+                    $('#employeeId').val(data.employeeId);
+                    $('#firstName').val(data.firstName);
+                    $('#middleName').val(data.middleName);
+                    $('#lastName').val(data.lastName);
+                    $('#monthlySalary').val(data.monthlySalary);
+
+                },
+                error: function (data) {
+
+                    toastr.error(data);
+                }
+            });
+        }
+
+        function UpdateEmployee() {
+            if ($('#firstName').val() == '') {
+                toastr.error("First Name is required");
+                return false;
+            }
+            if ($('#employeeId').val() == '') {
+                toastr.error("Employee Id is missing");
+                return false;
+            }
+            else if ($('#lastName').val() == '') {
+                toastr.error("Last Name is required");
+                return false;
+            }
+            else if ($('#monthlySalary').val() == '' || $('#monthlySalary').val() == 0) {
+                toastr.error("Monthly Salary is required");
+                return false;
+            }
+            else {
+                var data = {
+                    employeeId: $('#employeeId').val(),
+                    firstName: $('#firstName').val(),
+                    middleName: $('#middleName').val(),
+                    lastName: $('#lastName').val(),
+                    monthlySalary: $('#monthlySalary').val(),
+                };
+                $.ajax({
+                    url: '/Employee/UpdateEmployee',
+                    method: 'post',
+                    dataType: 'JSON',
+                    data: data,
+                    success: function (data) {
+                        toastr.success(data);
+                        GetEmpList();
+                        reset();
+                    },
+                    error: function () {
+                        toastr.error("Unable to Update");
+                    }
+                });
+            }
+        }
+
+
+        function reset() {
+            $('#employeeId').val('');
+            $('#firstName').val('');
+            $('#middleName').val('');
+            $('#lastName').val('');
+            $('#monthlySalary').val('');
+            $('#updateEmployee').hide();
+            $('#saveEmployee').show();
+        }
+
+    </script>
+}
