@@ -1,1 +1,4 @@
 Tasks 1 and 2 are in Tasks 1&2 folder and the third task of creating a project is in EmployeeProj folder along with its database backup file named 'Task.bak'
+
+To run the project the user has to restore tah backup database and in the web.config file the connection string has to be altered according to the server name
+of the sql server
